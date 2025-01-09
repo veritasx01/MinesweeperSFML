@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++",
+      "problemMatcher": "$gcc",
+      "args": [
+        "-std=c++17",
+        "-I/ucrt64/include",
+        "-L/ucrt64/lib",
+        "${file}",
+        "-o",
+        "${fileDirname}/SFMLApp",
+        "-lsfml-graphics",
+        "-lsfml-window",
+        "-lsfml-system"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
