@@ -98,18 +98,28 @@ void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
     int rows = visited.size();
     int cols = visited[0].size();
     int cnt = 0;
+    vector<pair<int,int>> nonFlaggedMines;
     for (int k = 0; k < 8; k++) {
         int idx = i + dx[k];
         int jdx = j + dy[k];
-        cnt += (idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols &&
-                board[idx][jdx] == 'M' && flagged[idx][jdx]);
+        bool inside = idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols;
+        cnt += (inside && board[idx][jdx] == 'M' && flagged[idx][jdx]);
+        if (inside && board[idx][jdx] == 'M' && !flagged[idx][jdx]) {
+            nonFlaggedMines.push_back({idx,jdx});
+        }
+    }
+    if (nonFlaggedMines.size() > 0) {
+        for (auto pair : nonFlaggedMines) {
+            visited[pair.first][pair.second] = 1;
+        }
+        return;
     }
     if (cnt == tile - '0') {
         for (int k = 0; k < 8; k++) {
             int idx = i + dx[k];
             int jdx = j + dy[k];
-            if (idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols &&
-                !flagged[idx][jdx]) {
+            bool inside = idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols;
+            if (inside && !flagged[idx][jdx]) {
                 if (board[idx][jdx] == '0') {
                     ProcessClickOnZero(board, visited, idx, jdx);
                 } else {
@@ -163,7 +173,7 @@ bool IsWinCondition(vector<vector<char>> &board,
 void OneShotProtection(gameState &gs, int idx, int jdx) {
     if (gs.board[idx][jdx] != 'M' || !gs.isFirstClick) {
         gs.isFirstClick = false;
-        return;\
+        return;
     }
     gs.originalBoard = gs.board;
     gs.isFirstClick = false;
@@ -180,7 +190,8 @@ void OneShotProtection(gameState &gs, int idx, int jdx) {
     }
 }
 
-void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition, bool left, bool right) {
+void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
+                 bool left, bool right) {
     if (gs.grid[i][j].getGlobalBounds().contains(clickPosition)) {
         std::cout << "Square clicked at (" << i << ", " << j << ")\n";
         if (gs.visited[i][j]) {
@@ -190,7 +201,7 @@ void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition, bool l
         } else if (gs.board[i][j] == '0') {
             ProcessClickOnZero(gs.board, gs.visited, i, j);
         } else {
-            OneShotProtection(gs,i,j);
+            OneShotProtection(gs, i, j);
             if (gs.board[i][j] == '0') {
                 ProcessClickOnZero(gs.board, gs.visited, i, j);
             }
@@ -209,7 +220,7 @@ void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
     // Check if any rectangle is clicked
     for (int i = 0; i < gs.rows; i++) {
         for (int j = 0; j < gs.cols; j++) {
-            SquareClick(gs,i,j,clickPosition,left,right);
+            SquareClick(gs, i, j, clickPosition, left, right);
         }
     }
 }
@@ -234,7 +245,7 @@ void InitializeGrid(gameState &gs, const sf::Vector2f &rectSize,
 }
 
 void InitialGameState(gameState &gs, string difficulty) {
-    gs.grid.clear();  // Clear the existing grid
+    gs.grid.clear(); // Clear the existing grid
     gs.grid.shrink_to_fit();
 
     gs.difficulty = difficulty;
@@ -259,11 +270,10 @@ void ResetBoard(gameState &gs) {
     gs.gameOver = false;
     gs.visited = vector<vector<bool>>(gs.rows, vector<bool>(gs.cols, 0));
     gs.flaged = vector<vector<bool>>(gs.rows, vector<bool>(gs.cols, 0));
-
 }
 
-void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,const float SPACING,
-                    const float OUTLINE_THICKNESS) {
+void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
+                  const float SPACING, const float OUTLINE_THICKNESS) {
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
@@ -273,23 +283,26 @@ void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
         } else if (event.type == sf::Event::KeyPressed) {
             auto eventKey = event.key.code;
             if (eventKey == sf::Keyboard::B) {
-                InitialGameState(gs,"BEGINNER");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING, OUTLINE_THICKNESS);
+                InitialGameState(gs, "BEGINNER");
+                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
+                               OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::I) {
-                InitialGameState(gs,"INTERMEDIATE");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING, OUTLINE_THICKNESS);
+                InitialGameState(gs, "INTERMEDIATE");
+                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
+                               OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::E) {
-                InitialGameState(gs,"EXPERT");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING, OUTLINE_THICKNESS);
+                InitialGameState(gs, "EXPERT");
+                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
+                               OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::R) {
                 ResetBoard(gs);
-            } else if (eventKey == sf::Keyboard::Escape || eventKey == sf::Keyboard::Q) {
+            } else if (eventKey == sf::Keyboard::Escape ||
+                       eventKey == sf::Keyboard::Q) {
                 window.close();
             }
         }
     }
 }
-
 
 void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
                    sf::Texture &texture, int idx, int jdx) {
@@ -334,7 +347,6 @@ void RenderGameOverGrid(gameState &gs, map<char, sf::Texture> &tileMap) {
         gs.grid[gs.x][gs.y].setTexture(&tileMap['M']);
     }
 }
-
 
 // int main() {
 //     int n = 9;
