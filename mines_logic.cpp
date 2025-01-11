@@ -343,8 +343,16 @@ void RenderGameOverGrid(gameState &gs, map<char, sf::Texture> &tileMap) {
             RenderCell(gs, tileMap, idx, jdx);
         }
     }
-    if (!gs.win) {
-        gs.grid[gs.x][gs.y].setTexture(&tileMap['M']);
+    if (gs.win) {
+        return;
+    }
+    gs.grid[gs.x][gs.y].setTexture(&tileMap['M']);
+    for (int idx = 0; idx < gs.rows; idx++) {
+        for (int jdx = 0; jdx < gs.cols; jdx++) {
+            if (gs.board[idx][jdx] == 'M' && gs.visited[idx][jdx]) {
+                gs.grid[idx][jdx].setTexture(&tileMap['M']);
+            }
+        }
     }
 }
 
