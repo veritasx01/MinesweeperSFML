@@ -194,7 +194,7 @@ void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
                  bool left, bool right) {
     if (gs.grid[i][j].getGlobalBounds().contains(clickPosition)) {
         std::cout << "Square clicked at (" << i << ", " << j << ")\n";
-        if (gs.visited[i][j]) {
+        if (gs.visited[i][j] && left) {
             chord(gs.board, gs.visited, gs.flaged, i, j);
         } else if (right && (!gs.visited[i][j] || gs.flaged[i][j])) {
             gs.flaged[i][j] = !gs.flaged[i][j];
