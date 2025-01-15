@@ -199,10 +199,12 @@ void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
         } else if (right && (!gs.visited[i][j] || gs.flaged[i][j])) {
             gs.flaged[i][j] = !gs.flaged[i][j];
         } else if (gs.board[i][j] == '0') {
+            gs.isFirstClick = false;
             ProcessClickOnZero(gs.board, gs.visited, i, j);
         } else {
             OneShotProtection(gs, i, j);
             if (gs.board[i][j] == '0') {
+                gs.isFirstClick = false;
                 ProcessClickOnZero(gs.board, gs.visited, i, j);
             }
             gs.visited[i][j] = 1;
@@ -278,7 +280,7 @@ void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
-        } else if (event.type == sf::Event::MouseButtonPressed) {
+        } else if (event.type == sf::Event::MouseButtonPressed && !gs.gameOver) {
             HandleLeftRight(window, gs, event);
         } else if (event.type == sf::Event::KeyPressed) {
             auto eventKey = event.key.code;
