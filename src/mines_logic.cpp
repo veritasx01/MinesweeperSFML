@@ -7,7 +7,7 @@
 using namespace std;
 using Config = std::tuple<int, int, int>; // (rows, cols, mines)
 
-Config getBoardConfig(const string &difficulty) {
+static Config getBoardConfig(const string &difficulty) {
     // Create a map of difficulty levels and their respective configurations
     std::map<std::string, Config> configs = {{"BEGINNER", {9, 9, 10}},
                                              {"INTERMEDIATE", {16, 16, 40}},
@@ -24,10 +24,10 @@ Config getBoardConfig(const string &difficulty) {
 // Beginner is usually on an 8x8 or 9x9 board containing 10 mines,
 // Intermediate is usually on a 16x16 board with 40 mines and expert is usually
 // on a 30x16 board with 99 mines
-int dx[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
-int dy[8] = {0, 1, 1, 1, 0, -1, -1, -1};
+static int dx[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
+static int dy[8] = {0, 1, 1, 1, 0, -1, -1, -1};
 
-void EvaluateBoardCells(vector<vector<char>> &board) {
+inline void EvaluateBoardCells(vector<vector<char>> &board) {
     int rows = board.size();
     int cols = board[0].size();
     for (int i = 0; i < rows; i++) {
@@ -49,7 +49,7 @@ void EvaluateBoardCells(vector<vector<char>> &board) {
     }
 }
 
-vector<vector<char>> GenBoard(int rows, int cols, int mines) {
+inline vector<vector<char>> GenBoard(int rows, int cols, int mines) {
     vector<vector<char>> board =
         vector<vector<char>>(rows, vector<char>(cols, '0'));
     srand(time(0));
@@ -67,7 +67,7 @@ vector<vector<char>> GenBoard(int rows, int cols, int mines) {
     return board;
 }
 
-void ProcessClickOnZero(vector<vector<char>> &board,
+inline void ProcessClickOnZero(vector<vector<char>> &board,
                         vector<vector<bool>> &visited, int i, int j) {
     // processing a click on a non zero is just setting visited[i][j] = 1
     // and on a mine is better handeled in main
@@ -89,7 +89,7 @@ void ProcessClickOnZero(vector<vector<char>> &board,
     }
 }
 
-void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
+inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
            vector<vector<bool>> &flagged, int i, int j) {
     char tile = board[i][j];
     if (tile == 'M' || tile == '0' || !visited[i][j]) {
@@ -130,7 +130,7 @@ void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
     }
 }
 
-string BoardToString(vector<vector<char>> &board) {
+inline string BoardToString(vector<vector<char>> &board) {
     int rows = board.size();
     int cols = board[0].size();
     string res = "";
@@ -143,7 +143,7 @@ string BoardToString(vector<vector<char>> &board) {
     return res;
 }
 
-string BoardToString(vector<vector<bool>> &board) {
+inline string BoardToString(vector<vector<bool>> &board) {
     int rows = board.size();
     int cols = board[0].size();
     string res = "";
@@ -156,7 +156,7 @@ string BoardToString(vector<vector<bool>> &board) {
     return res;
 }
 
-bool IsWinCondition(vector<vector<char>> &board,
+inline bool IsWinCondition(vector<vector<char>> &board,
                     vector<vector<bool>> &visited) {
     int rows = board.size();
     int cols = board[0].size();
@@ -170,7 +170,7 @@ bool IsWinCondition(vector<vector<char>> &board,
     return true;
 }
 
-void OneShotProtection(gameState &gs, int idx, int jdx) {
+inline void OneShotProtection(gameState &gs, int idx, int jdx) {
     if (gs.board[idx][jdx] != 'M' || !gs.isFirstClick) {
         gs.isFirstClick = false;
         return;
@@ -190,7 +190,7 @@ void OneShotProtection(gameState &gs, int idx, int jdx) {
     }
 }
 
-void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
+inline void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
                  bool left, bool right) {
     if (gs.grid[i][j].getGlobalBounds().contains(clickPosition)) {
         std::cout << "Square clicked at (" << i << ", " << j << ")\n";
@@ -212,7 +212,7 @@ void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
     }
 }
 
-void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
+inline void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
                      sf::Event &event) {
     bool left = event.mouseButton.button == sf::Mouse::Left;
     bool right = event.mouseButton.button == sf::Mouse::Right;
@@ -227,7 +227,7 @@ void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
     }
 }
 
-void InitializeGrid(gameState &gs, const sf::Vector2f &rectSize,
+inline void InitializeGrid(gameState &gs, const sf::Vector2f &rectSize,
                     sf::Texture &texture, const float SPACING,
                     const float OUTLINE_THICKNESS) {
     for (int i = 0; i < gs.rows; i++) {
@@ -246,7 +246,7 @@ void InitializeGrid(gameState &gs, const sf::Vector2f &rectSize,
     }
 }
 
-void InitialGameState(gameState &gs, string difficulty) {
+inline void InitialGameState(gameState &gs, string difficulty) {
     gs.grid.clear(); // Clear the existing grid
     gs.grid.shrink_to_fit();
 
@@ -263,7 +263,7 @@ void InitialGameState(gameState &gs, string difficulty) {
     gs.y = -1;
 }
 
-void ResetBoard(gameState &gs) {
+inline void ResetBoard(gameState &gs) {
     gs.board = gs.originalBoard;
     gs.x = -1;
     gs.y = -1;
@@ -274,7 +274,7 @@ void ResetBoard(gameState &gs) {
     gs.flaged = vector<vector<bool>>(gs.rows, vector<bool>(gs.cols, 0));
 }
 
-void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
+inline void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
                   const float SPACING, const float OUTLINE_THICKNESS) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -306,7 +306,7 @@ void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
     }
 }
 
-void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
+inline void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
                    sf::Texture &texture, int idx, int jdx) {
     char tileValue = gs.board[idx][jdx];
     if (gs.flaged[idx][jdx]) {
@@ -323,7 +323,7 @@ void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
     }
 }
 
-void ProcessChanges(gameState &gs, map<char, sf::Texture> &tileMap,
+inline void ProcessChanges(gameState &gs, map<char, sf::Texture> &tileMap,
                     sf::Texture &texture) {
     for (int idx = 0; idx < gs.rows; idx++) {
         for (int jdx = 0; jdx < gs.cols; jdx++) {
@@ -332,14 +332,14 @@ void ProcessChanges(gameState &gs, map<char, sf::Texture> &tileMap,
     }
 }
 
-void RenderCell(gameState &gs, map<char, sf::Texture> &tileMap, int idx,
+inline void RenderCell(gameState &gs, map<char, sf::Texture> &tileMap, int idx,
                 int jdx) {
     if (gs.board[idx][jdx] == 'M' && !(idx == gs.x && jdx == gs.y)) {
         gs.grid[idx][jdx].setTexture(&tileMap['R']);
     }
 }
 
-void RenderGameOverGrid(gameState &gs, map<char, sf::Texture> &tileMap) {
+inline void RenderGameOverGrid(gameState &gs, map<char, sf::Texture> &tileMap) {
     for (int idx = 0; idx < gs.rows; idx++) {
         for (int jdx = 0; jdx < gs.cols; jdx++) {
             RenderCell(gs, tileMap, idx, jdx);

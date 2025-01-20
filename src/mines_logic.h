@@ -1,7 +1,8 @@
-#ifndef GAME_STATE_H
-#define GAME_STATE_H
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <string>
+#ifndef GAME_STATE_H
+#define GAME_STATE_H
 
 struct gameState {
     std::vector<std::vector<sf::RectangleShape>> grid;
