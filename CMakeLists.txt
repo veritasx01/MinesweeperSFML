@@ -34,6 +34,6 @@ target_link_libraries(minesweeper PRIVATE
 add_custom_command(
     TARGET minesweeper POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/src/assets
+    ${CMAKE_SOURCE_DIR}/src/Assets
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/assets
 )

@@ -108,12 +108,6 @@ inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
             nonFlaggedMines.push_back({idx,jdx});
         }
     }
-    if (nonFlaggedMines.size() > 0) {
-        for (auto pair : nonFlaggedMines) {
-            visited[pair.first][pair.second] = 1;
-        }
-        return;
-    }
     if (cnt == tile - '0') {
         for (int k = 0; k < 8; k++) {
             int idx = i + dx[k];
@@ -126,6 +120,12 @@ inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
                     visited[idx][jdx] = 1;
                 }
             }
+        }
+        return;
+    }
+    if (nonFlaggedMines.size() > 0) {
+        for (auto pair : nonFlaggedMines) {
+            visited[pair.first][pair.second] = 1;
         }
     }
 }
