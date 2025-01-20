@@ -1,6 +1,10 @@
 # Preview
-![Image 1](Images/ms1.png)
-![Image 2](Images/ms2.png)
+<picture>
+  <img alt="Image1" src="Images/ms1.PNG">
+</picture>
+<picture>
+  <img alt="Image2" src="Images/ms2.PNG">
+</picture>
 
 # Installation
 
@@ -19,7 +23,7 @@ If you already have a C++ compiler and SFML installed, you can compile the game 
 
 ## option 2: Build from source
 
-If you have a C++ compiler and SFML installed, you can build from source \
+If you have a C++ compiler and SFML is **not** installed, you can build from source \
 the game can run without SFML or a compiler when installed.
 
 1. Navigate to `project root`
