@@ -97,13 +97,15 @@ inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
     }
     int rows = visited.size();
     int cols = visited[0].size();
-    int cnt = 0;
+    int cnt = 0; // cnt of cell which is a mine and flagged
+    int flag_cnt = 0;
     vector<pair<int, int>> nonFlaggedMines;
     for (int k = 0; k < 8; k++) {
         int idx = i + dx[k];
         int jdx = j + dy[k];
         bool inside = idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols;
         cnt += (inside && board[idx][jdx] == 'M' && flagged[idx][jdx]);
+        flag_cnt += (inside && flagged[idx][jdx]);
         if (inside && board[idx][jdx] == 'M' && !flagged[idx][jdx]) {
             nonFlaggedMines.push_back({idx, jdx});
         }
@@ -123,7 +125,7 @@ inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
         }
         return;
     }
-    if (nonFlaggedMines.size() > 0) {
+    if (flag_cnt == tile - '0') {
         for (auto pair : nonFlaggedMines) {
             visited[pair.first][pair.second] = 1;
         }
