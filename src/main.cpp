@@ -6,10 +6,9 @@
 void drawWinLoseScreen(sf::RenderWindow &window, bool isWin) {
     sf::Font font;
     if (!font.loadFromFile("Assets/OpenSans-VariableFont_wdth,wght.ttf")) {
-        // Handle error
+        cout << "font missing from assets\n";
     }
 
-    // Create the win/lose text
     sf::Text text;
     text.setFont(font);
     text.setCharacterSize(35);
@@ -21,11 +20,9 @@ void drawWinLoseScreen(sf::RenderWindow &window, bool isWin) {
         text.setString("Game Over!");
     }
 
-    // Center the text in the window
     sf::FloatRect textRect = text.getLocalBounds();
     text.setOrigin(textRect.width / 2, textRect.height / 0.5);
     text.setPosition(window.getSize().x / 2, window.getSize().y / 1.2);
-    // Draw the text on the screen
     window.draw(text);
 }
 
@@ -39,22 +36,19 @@ map<char, string> tileDict = {
     {'4', "Assets/tile004.jpg"}, {'5', "Assets/tile005.jpg"},
     {'6', "Assets/tile006.jpg"}, {'7', "Assets/tile007.jpg"},
     {'8', "Assets/tile008.jpg"}, {'M', "Assets/tile013.jpg"},
-    {'F', "Assets/tile010.jpg"}, {'R', "Assets/tile012.jpg"}};
+    {'F', "Assets/tile010.jpg"}, {'R', "Assets/tile012.jpg"}
+};
 
 int main() {
-    // init
     gameState gs;
-    std::string lastDiff = "BEGINNER";
     gs.difficulty = "BEGINNER";
-    // initial game state according to gs and difficulty
     InitialGameState(gs, gs.difficulty);
     const sf::Vector2f rectSize(25.0f, 25.0f); // Rectangle size (square)
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Minesweeper");
-
     sf::Text instructionText;
     sf::Font font;
     if (!font.loadFromFile("Assets/OpenSans-VariableFont_wdth,wght.ttf")) {
-        // Handle error
+        cout << "font missing from assets\n";
     }
     instructionText.setFont(font);
     instructionText.setCharacterSize(20);
@@ -66,7 +60,6 @@ int main() {
 
     sf::Texture texture;
     map<char, sf::Texture> tileMap;
-    // load textures to tile map
     if (!texture.loadFromFile("Assets/tile009.jpg")) {
         std::cout << "texture not found\n";
     }
@@ -92,6 +85,7 @@ int main() {
                 window.draw(it);
             }
         }
+
         gs.win = IsWinCondition(gs.board, gs.visited);
         gs.gameOver |= gs.win;
         if (gs.gameOver) {

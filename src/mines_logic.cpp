@@ -68,7 +68,7 @@ inline vector<vector<char>> GenBoard(int rows, int cols, int mines) {
 }
 
 inline void ProcessClickOnZero(vector<vector<char>> &board,
-                        vector<vector<bool>> &visited, int i, int j) {
+                               vector<vector<bool>> &visited, int i, int j) {
     // processing a click on a non zero is just setting visited[i][j] = 1
     // and on a mine is better handeled in main
     if (!(i >= 0 && i < visited.size() && j >= 0 && j < visited[i].size() &&
@@ -90,7 +90,7 @@ inline void ProcessClickOnZero(vector<vector<char>> &board,
 }
 
 inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
-           vector<vector<bool>> &flagged, int i, int j) {
+                  vector<vector<bool>> &flagged, int i, int j) {
     char tile = board[i][j];
     if (tile == 'M' || tile == '0' || !visited[i][j]) {
         return;
@@ -98,14 +98,14 @@ inline void chord(vector<vector<char>> &board, vector<vector<bool>> &visited,
     int rows = visited.size();
     int cols = visited[0].size();
     int cnt = 0;
-    vector<pair<int,int>> nonFlaggedMines;
+    vector<pair<int, int>> nonFlaggedMines;
     for (int k = 0; k < 8; k++) {
         int idx = i + dx[k];
         int jdx = j + dy[k];
         bool inside = idx >= 0 && idx < rows && jdx >= 0 && jdx <= cols;
         cnt += (inside && board[idx][jdx] == 'M' && flagged[idx][jdx]);
         if (inside && board[idx][jdx] == 'M' && !flagged[idx][jdx]) {
-            nonFlaggedMines.push_back({idx,jdx});
+            nonFlaggedMines.push_back({idx, jdx});
         }
     }
     if (cnt == tile - '0') {
@@ -157,7 +157,7 @@ inline string BoardToString(vector<vector<bool>> &board) {
 }
 
 inline bool IsWinCondition(vector<vector<char>> &board,
-                    vector<vector<bool>> &visited) {
+                           vector<vector<bool>> &visited) {
     int rows = board.size();
     int cols = board[0].size();
     for (int i = 0; i < rows; i++) {
@@ -191,7 +191,7 @@ inline void OneShotProtection(gameState &gs, int idx, int jdx) {
 }
 
 inline void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
-                 bool left, bool right) {
+                        bool left, bool right) {
     if (gs.grid[i][j].getGlobalBounds().contains(clickPosition)) {
         std::cout << "Square clicked at (" << i << ", " << j << ")\n";
         if (gs.visited[i][j] && left) {
@@ -213,7 +213,7 @@ inline void SquareClick(gameState &gs, int i, int j, sf::Vector2f clickPosition,
 }
 
 inline void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
-                     sf::Event &event) {
+                            sf::Event &event) {
     bool left = event.mouseButton.button == sf::Mouse::Left;
     bool right = event.mouseButton.button == sf::Mouse::Right;
     auto mouse_pos = sf::Mouse::getPosition(window);
@@ -228,8 +228,8 @@ inline void HandleLeftRight(sf::RenderWindow &window, gameState &gs,
 }
 
 inline void InitializeGrid(gameState &gs, const sf::Vector2f &rectSize,
-                    sf::Texture &texture, const float SPACING,
-                    const float OUTLINE_THICKNESS) {
+                           sf::Texture &texture, const float SPACING,
+                           const float OUTLINE_THICKNESS) {
     for (int i = 0; i < gs.rows; i++) {
         std::vector<sf::RectangleShape> v1;
         for (int j = 0; j < gs.cols; j++) {
@@ -274,28 +274,28 @@ inline void ResetBoard(gameState &gs) {
     gs.flaged = vector<vector<bool>>(gs.rows, vector<bool>(gs.cols, 0));
 }
 
-inline void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &texture,
-                  const float SPACING, const float OUTLINE_THICKNESS) {
+const sf::Vector2f TILE(25.0f, 25.0f);
+inline void HandleClicks(sf::RenderWindow &window, gameState &gs,
+                         sf::Texture &texture, const float SPACING,
+                         const float OUTLINE_THICKNESS) {
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
-        } else if (event.type == sf::Event::MouseButtonPressed && !gs.gameOver) {
+        } else if (event.type == sf::Event::MouseButtonPressed &&
+                   !gs.gameOver) {
             HandleLeftRight(window, gs, event);
         } else if (event.type == sf::Event::KeyPressed) {
             auto eventKey = event.key.code;
             if (eventKey == sf::Keyboard::B) {
                 InitialGameState(gs, "BEGINNER");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
-                               OUTLINE_THICKNESS);
+                InitializeGrid(gs, TILE, texture, SPACING, OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::I) {
                 InitialGameState(gs, "INTERMEDIATE");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
-                               OUTLINE_THICKNESS);
+                InitializeGrid(gs, TILE, texture, SPACING, OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::E) {
                 InitialGameState(gs, "EXPERT");
-                InitializeGrid(gs, sf::Vector2f(25.0f, 25.0f), texture, SPACING,
-                               OUTLINE_THICKNESS);
+                InitializeGrid(gs, TILE, texture, SPACING, OUTLINE_THICKNESS);
             } else if (eventKey == sf::Keyboard::R) {
                 ResetBoard(gs);
             } else if (eventKey == sf::Keyboard::Escape ||
@@ -307,7 +307,7 @@ inline void HandleClicks(sf::RenderWindow &window, gameState &gs, sf::Texture &t
 }
 
 inline void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
-                   sf::Texture &texture, int idx, int jdx) {
+                          sf::Texture &texture, int idx, int jdx) {
     char tileValue = gs.board[idx][jdx];
     if (gs.flaged[idx][jdx]) {
         gs.grid[idx][jdx].setTexture(&tileMap['F']);
@@ -324,7 +324,7 @@ inline void ProcessChange(gameState &gs, map<char, sf::Texture> &tileMap,
 }
 
 inline void ProcessChanges(gameState &gs, map<char, sf::Texture> &tileMap,
-                    sf::Texture &texture) {
+                           sf::Texture &texture) {
     for (int idx = 0; idx < gs.rows; idx++) {
         for (int jdx = 0; jdx < gs.cols; jdx++) {
             ProcessChange(gs, tileMap, texture, idx, jdx);
@@ -333,7 +333,7 @@ inline void ProcessChanges(gameState &gs, map<char, sf::Texture> &tileMap,
 }
 
 inline void RenderCell(gameState &gs, map<char, sf::Texture> &tileMap, int idx,
-                int jdx) {
+                       int jdx) {
     if (gs.board[idx][jdx] == 'M' && !(idx == gs.x && jdx == gs.y)) {
         gs.grid[idx][jdx].setTexture(&tileMap['R']);
     }
@@ -357,16 +357,3 @@ inline void RenderGameOverGrid(gameState &gs, map<char, sf::Texture> &tileMap) {
         }
     }
 }
-
-// int main() {
-//     int n = 9;
-//     int m = 9;
-//     int mines = 10;
-//     auto bo = GenBoard(n,m,mines);
-//     vector<vector<bool>> visited(n,vector<bool>(m,0));
-//     cout << BoardToString(bo);
-//     ProcessClickOnZero(bo,visited,0,0);
-//     cout << "-------------\n";
-//     cout << BoardToString(visited);
-//     return 0;
-// }
